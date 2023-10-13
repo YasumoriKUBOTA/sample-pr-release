@@ -24,7 +24,7 @@ jobs:
           TZ: Asia/Tokyo
       - run: |
           DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E  ".go" | sed "s/^/- [ ] /g")
-          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body | sed "/## Migrations/,/$/d")
           gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
           ## Migrations
           $DIFF_FILES"
