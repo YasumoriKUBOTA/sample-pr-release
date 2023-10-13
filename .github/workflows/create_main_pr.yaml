@@ -1,0 +1,36 @@
+name: create_main_pr
+on:
+  push:
+    branches:
+    - develop
+jobs:
+  git-pr-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 3.1
+      - run: gem install --no-document git-pr-release
+      - run: git-pr-release --no-fetch
+        env:
+          GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_PR_RELEASE_BRANCH_PRODUCTION: main
+          GIT_PR_RELEASE_BRANCH_STAGING: develop
+          GIT_PR_RELEASE_LABELS: release
+          GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
+          TZ: Asia/Tokyo
+      - run: |
+          DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E  ".go" | sed "s/^/- [ ] /g")
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
+          ## Migrations
+          $DIFF_FILES"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+
+
+
