@@ -28,6 +28,8 @@ jobs:
           gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
           ## Migrations
           $DIFF_FILES"
+        env:
+          GH_TOKEN: ${{ github.token }}
 
 
 
