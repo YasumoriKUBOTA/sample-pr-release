@@ -22,3 +22,13 @@ jobs:
           GIT_PR_RELEASE_LABELS: release
           GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
           TZ: Asia/Tokyo
+      - run: |
+          DIFF_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD --relative ./src | grep -E  ".go" | sed "s/^/- [ ] /g")
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
+          ## Migrations
+          $DIFF_FILES"
+
+
+
+
