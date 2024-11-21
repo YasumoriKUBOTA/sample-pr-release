@@ -23,9 +23,12 @@ jobs:
           GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
           TZ: Asia/Tokyo
       - run: |
-          echo $(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          echo "description: $DESCRIPTION"
           CMD_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/")
+          echo "cmd: $CMD"
           APP_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/app/")
+          echo "app: $APP"
           if [ -n "$CMD_DIFF_FILES" ]; then
             CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
