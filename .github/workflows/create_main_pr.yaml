@@ -28,7 +28,7 @@ jobs:
           if [ -n "$CMD_DIFF" ]; then
             CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
-          APP_DIFF=$(git diff --name-only origin/main HEAD --relative ./src | grep "/app/" || true)
+          APP_DIFF=$(git diff --name-only origin/main HEAD --relative ./src/app)
           if [ -n "$APP_DIFF" ]; then
             APP_DIFF=":white_check_mark: app変更あり"
           fi
