@@ -23,8 +23,8 @@ jobs:
           GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
           TZ: Asia/Tokyo
       - run: |
-          CMD_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E  "/cmd/.*go$")
-          APP_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E "/app/.*go$")
+          #CMD_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E "/cmd/.*go$")
+          # APP_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E "/app/.*go$")
           if [ -n "$CMD_DIFF_FILES" ]; then
             CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
