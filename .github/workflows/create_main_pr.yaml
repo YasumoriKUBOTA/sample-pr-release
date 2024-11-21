@@ -14,7 +14,7 @@ jobs:
         with:
           ruby-version: 3.1
       - run: gem install --no-document git-pr-release
-      - run: git-pr-release --no-fetch
+      - run: git-pr-release --no-fetch --overwrite-description
         env:
           GIT_PR_RELEASE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIT_PR_RELEASE_BRANCH_PRODUCTION: main
@@ -23,17 +23,18 @@ jobs:
           GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
           TZ: Asia/Tokyo
       - run: |
-          DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep -E  ".go" | sed "s/^/- [ ] /g")
-          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body | sed "/## Migrations/,/$/d")
-          gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
-          ## Migrations
-          $DIFF_FILES"
-        env:
-          GH_TOKEN: ${{ github.token }}
-      - run: |
-          DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src/app)
-          if [ -n "$DIFF_FILES" ]; then
-            gh pr edit --add-label app
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
+          CMD_DIFF=$(git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/" || true)
+          if [ -n "$CMD_DIFF" ]; then
+            CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
+          APP_DIFF=$(git diff --name-only origin/main HEAD --relative ./src/app)
+          if [ -n "$APP_DIFF" ]; then
+            APP_DIFF=":white_check_mark: app変更あり"
+          fi
+          gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
+          $CMD_DIFF
+          $APP_DIFF
+          "
         env:
           GH_TOKEN: ${{ github.token }}
