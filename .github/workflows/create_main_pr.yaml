@@ -24,15 +24,12 @@ jobs:
           TZ: Asia/Tokyo
       - run: |
           DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
-          echo "description: $DESCRIPTION"
-          CMD_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/")
-          echo "cmd: $CMD"
-          APP_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/app/")
-          echo "app: $APP"
-          if [ -n "$CMD_DIFF_FILES" ]; then
+          git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/"
+          if [[ $? == 1 ]]; then
             CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
-          if [ -n "$APP_DIFF_FILES" ]; then
+          git diff --name-only origin/main HEAD --relative ./src | grep "/app/"
+          if [[ $? == 1 ]]; then
             APP_DIFF=":white_check_mark: app変更あり"
           fi
           gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
