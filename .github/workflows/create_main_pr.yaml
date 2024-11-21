@@ -24,12 +24,12 @@ jobs:
           TZ: Asia/Tokyo
       - run: |
           DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
-          git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/"
-          if [[ $? == 1 ]]; then
+          CMD_DIFF=$(git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/" || true)
+          if [ -n "$CMD_DIFF" ]; then
             CMD_DIFF=":white_check_mark: cmd変更あり"
           fi
-          git diff --name-only origin/main HEAD --relative ./src | grep "/app/"
-          if [[ $? == 1 ]]; then
+          APP_DIFF=$(git diff --name-only origin/main HEAD --relative ./src | grep "/app/" || true)
+          if [ -n "$APP_DIFF" ]; then
             APP_DIFF=":white_check_mark: app変更あり"
           fi
           gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
