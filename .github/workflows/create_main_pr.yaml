@@ -23,7 +23,6 @@ jobs:
           GIT_PR_RELEASE_TEMPLATE: .github/git-pr-release.erb
           TZ: Asia/Tokyo
       - run: |
-          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
           CMD_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/cmd/")
           APP_DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src | grep "/app/")
           if [ -n "$CMD_DIFF_FILES" ]; then
@@ -32,6 +31,7 @@ jobs:
           if [ -n "$APP_DIFF_FILES" ]; then
             APP_DIFF=":white_check_mark: app変更あり"
           fi
+          DESCRIPTION=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq .body)
           gh pr edit ${{ github.event.pull_request.number }} --body "$DESCRIPTION
           $CMD_DIFF
           $APP_DIFF
