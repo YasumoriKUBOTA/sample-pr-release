@@ -34,6 +34,8 @@ jobs:
           DIFF_FILES=$(git diff --name-only origin/main HEAD --relative ./src/app)
           if [ -n "$DIFF_FILES" ]; then
             gh pr edit --add-label app
+          else
+            gh pr edit --remove-label app
           fi
         env:
           GH_TOKEN: ${{ github.token }}
